@@ -62,7 +62,21 @@ export const AuthProvider = ({ children }) => {
       });
 
       // Call the HTTP endpoint to record user details (non-blocking, fire and forget)
-      const apiEndpoint = import.meta.env.VITE_API_ENDPOINT;
+      let apiEndpoint = import.meta.env.VITE_API_ENDPOINT;
+      
+      // In development mode, use the Vite proxy to avoid CORS issues
+      // The proxy forwards /api/* to http://localhost:5255/*
+      if (import.meta.env.DEV && apiEndpoint && apiEndpoint.includes('localhost:5255')) {
+        // Convert http://localhost:5255/login to /api/login
+        const url = new URL(apiEndpoint);
+        apiEndpoint = `/api${url.pathname}${url.search}`;
+      }
+      
+      // Log the endpoint value for debugging (always log, not just in dev mode)
+      console.log('[AuthContext] VITE_API_ENDPOINT value:', import.meta.env.VITE_API_ENDPOINT);
+      console.log('[AuthContext] Using endpoint:', apiEndpoint);
+      console.log('[AuthContext] Development mode:', import.meta.env.DEV);
+      
       if (apiEndpoint) {
         const requestData = {
           name: userData.name,
@@ -72,6 +86,8 @@ export const AuthProvider = ({ children }) => {
         };
         
         logApi('AuthContext', 'POST', apiEndpoint, requestData);
+        console.log('[AuthContext] Sending POST request to:', apiEndpoint);
+        console.log('[AuthContext] Request data:', requestData);
         
         // Don't await - let it run in the background
         fetch(apiEndpoint, {
@@ -82,6 +98,7 @@ export const AuthProvider = ({ children }) => {
           body: JSON.stringify(requestData),
         })
           .then(async (response) => {
+            console.log('[AuthContext] Response received:', response.status, response.statusText);
             if (!response.ok) {
               const errorText = await response.text();
               logWarn('AuthContext', `API endpoint returned non-OK status: ${response.status}`, {
@@ -89,10 +106,12 @@ export const AuthProvider = ({ children }) => {
                 statusText: response.statusText,
                 error: errorText
               });
+              console.error('[AuthContext] API error:', response.status, errorText);
             } else {
               const responseData = await response.json().catch(() => ({}));
               logApi('AuthContext', 'POST', apiEndpoint, null, responseData);
               logInfo('AuthContext', 'User login successfully recorded in database');
+              console.log('[AuthContext] API success:', responseData);
             }
           })
           .catch((error) => {
@@ -101,9 +120,16 @@ export const AuthProvider = ({ children }) => {
               error: error.message,
               note: 'This is expected if the API service is not yet running.'
             });
+            console.error('[AuthContext] Fetch error:', error);
+            console.error('[AuthContext] Error details:', {
+              message: error.message,
+              stack: error.stack,
+              name: error.name
+            });
           });
       } else {
         logWarn('AuthContext', 'VITE_API_ENDPOINT not configured. User login not recorded to database.');
+        console.warn('[AuthContext] VITE_API_ENDPOINT is undefined or empty');
       }
       
       logInfo('AuthContext', 'Login completed successfully', {
