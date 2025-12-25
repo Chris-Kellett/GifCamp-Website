@@ -57,6 +57,14 @@ The HTTP endpoint URL for fetching all categories for a user.
 **Operation:**
 - **POST** `/category-all` - Fetches all categories for a user (body: `{ userId: number }`)
 
+### VITE_CATEGORIES_DELETE_API_ENDPOINT
+The HTTP endpoint URL for deleting a category.
+
+**Format:** `http://your-api-server.com/category-delete`
+
+**Operation:**
+- **POST** `/category-delete` - Deletes a category (body: `{ userId: number, categoryId: number }`)
+
 ### VITE_ISDEV (Optional)
 Enable development logging. When set to `true`, detailed logs will be output to the terminal/console for all user actions, API calls, and application events.
 
@@ -75,6 +83,7 @@ VITE_GOOGLE_CLIENT_ID=your_google_client_id_here
 VITE_API_ENDPOINT=http://localhost:5255/login
 VITE_CATEGORIES_API_ENDPOINT=http://localhost:5255/category-add
 VITE_CATEGORIES_ALL_API_ENDPOINT=http://localhost:5255/category-all
+VITE_CATEGORIES_DELETE_API_ENDPOINT=http://localhost:5255/category-delete
 VITE_ISDEV=true
 ```
 
@@ -89,6 +98,7 @@ VITE_GOOGLE_CLIENT_ID=your_production_google_client_id_here
 VITE_API_ENDPOINT=https://your-production-api.com/login
 VITE_CATEGORIES_API_ENDPOINT=https://your-production-api.com/category-add
 VITE_CATEGORIES_ALL_API_ENDPOINT=https://your-production-api.com/category-all
+VITE_CATEGORIES_DELETE_API_ENDPOINT=https://your-production-api.com/category-delete
 VITE_ISDEV=false
 ```
 

@@ -136,10 +136,14 @@ export const AuthProvider = ({ children }) => {
             // Preserve OAuth fields (like picture) that come from Google
             if (responseData.user && typeof responseData.user === 'object') {
               const picture = userData.picture; // Preserve OAuth picture
+              const method = userData.method; // Preserve OAuth method
               userData = { ...userData, ...responseData.user };
-              // Ensure picture is preserved if API didn't provide it
-              if (!responseData.user.picture && picture) {
+              // Always preserve OAuth picture and method - API response shouldn't overwrite these
+              if (picture) {
                 userData.picture = picture;
+              }
+              if (method) {
+                userData.method = method;
               }
             }
           }

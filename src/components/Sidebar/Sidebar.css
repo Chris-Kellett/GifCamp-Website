@@ -100,6 +100,10 @@
   /* Same as sidebar-button, no additional styles needed */
   border-radius: 0;
   border-top: none;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  position: relative;
 }
 
 .sidebar-category-button:first-child {
@@ -115,6 +119,40 @@
 
 .sidebar-category-button:not(:last-child) {
   border-bottom: none;
+}
+
+.category-name {
+  flex: 1;
+  text-align: left;
+}
+
+.category-delete-button {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0.25rem 0.5rem;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+  font-size: 1.2rem;
+  font-weight: 300;
+  color: #666;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 4px;
+  margin-left: 0.5rem;
+  line-height: 1;
+  width: 24px;
+  height: 24px;
+}
+
+.sidebar-category-button:hover .category-delete-button {
+  opacity: 1;
+}
+
+.category-delete-button:hover {
+  background-color: rgba(231, 76, 60, 0.1);
+  color: #e74c3c;
 }
 
 .sidebar-loading,

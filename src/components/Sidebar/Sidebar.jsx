@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useAuth } from '../../contexts/AuthContext';
 import { logInfo, logError, logAction } from '../../utils/logger';
 import CreateCategoryModal from '../CreateCategoryModal/CreateCategoryModal';
+import DeleteCategoryModal from '../DeleteCategoryModal/DeleteCategoryModal';
 import './Sidebar.css';
 
 const Sidebar = ({ onCategorySelect, selectedCategoryId, selectedCategoryName }) => {
@@ -9,6 +10,7 @@ const Sidebar = ({ onCategorySelect, selectedCategoryId, selectedCategoryName })
   const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(true);
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
+  const [deleteCategory, setDeleteCategory] = useState(null);
 
   const fetchCategories = async () => {
     if (!user) return;
@@ -124,11 +126,27 @@ const Sidebar = ({ onCategorySelect, selectedCategoryId, selectedCategoryName })
     }
   };
 
-  const handleCategoryClick = (category) => {
+  const handleCategoryClick = (category, e) => {
+    // Don't trigger category selection if clicking the trash icon
+    if (e && e.target.closest('.category-delete-button')) {
+      return;
+    }
     logAction('Sidebar', 'Category clicked', { id: category.id, name: category.name });
     if (onCategorySelect) {
       onCategorySelect(category.id, category.name);
     }
+  };
+
+  const handleDeleteClick = (category, e) => {
+    e.stopPropagation();
+    logAction('Sidebar', 'Delete category button clicked', { id: category.id, name: category.name });
+    setDeleteCategory(category);
+  };
+
+  const handleCategoryDeleted = () => {
+    logAction('Sidebar', 'Category deleted, refreshing list');
+    fetchCategories();
+    setDeleteCategory(null);
   };
 
   return (
@@ -167,10 +185,17 @@ const Sidebar = ({ onCategorySelect, selectedCategoryId, selectedCategoryName })
                 <button
                   key={category.id}
                   className="sidebar-button sidebar-category-button"
-                  onClick={() => handleCategoryClick(category)}
+                  onClick={(e) => handleCategoryClick(category, e)}
                   data-selected={selectedCategoryId === category.id}
                 >
-                  {category.name}
+                  <span className="category-name">{category.name}</span>
+                  <button
+                    className="category-delete-button"
+                    onClick={(e) => handleDeleteClick(category, e)}
+                    title="Delete category"
+                  >
+                    ×
+                  </button>
                 </button>
               ))}
             </div>
@@ -182,6 +207,14 @@ const Sidebar = ({ onCategorySelect, selectedCategoryId, selectedCategoryName })
         <CreateCategoryModal
           onClose={() => setIsCreateModalOpen(false)}
           onCategoryCreated={handleCategoryCreated}
+        />
+      )}
+
+      {deleteCategory && (
+        <DeleteCategoryModal
+          onClose={() => setDeleteCategory(null)}
+          category={deleteCategory}
+          onCategoryDeleted={handleCategoryDeleted}
         />
       )}
     </>

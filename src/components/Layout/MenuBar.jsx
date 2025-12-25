@@ -13,6 +13,14 @@ const MenuBar = () => {
   // Reset image error when user changes
   useEffect(() => {
     setImageError(false);
+    // Debug: Log user picture status
+    if (user) {
+      console.log('[MenuBar] User updated:', { 
+        hasPicture: !!user.picture, 
+        picture: user.picture,
+        name: user.name 
+      });
+    }
   }, [user]);
 
   const handleLoginClick = () => {
@@ -33,17 +41,25 @@ const MenuBar = () => {
   const getAvatarSrc = () => {
     // If user has no picture or image error occurred, use placeholder
     if (!user?.picture || imageError) {
-      return placeholderImage;
+      // Use absolute path for placeholder to ensure it loads
+      return window.location.origin + placeholderImage;
     }
     return user.picture;
   };
 
   const handleImageError = (e) => {
+    const currentSrc = e.target.src;
+    const placeholderFullPath = window.location.origin + placeholderImage;
+    
     // Only set error if the failed image wasn't already the placeholder
-    if (e.target.src !== placeholderImage && e.target.src !== window.location.origin + placeholderImage) {
+    if (currentSrc !== placeholderImage && currentSrc !== placeholderFullPath) {
+      console.warn('[MenuBar] Image failed to load:', currentSrc, 'Falling back to placeholder');
       setImageError(true);
-      // Retry with placeholder
-      e.target.src = placeholderImage;
+      // Retry with placeholder - use absolute path to ensure it loads
+      e.target.src = placeholderFullPath;
+    } else {
+      // Even placeholder failed - show alt text
+      console.error('[MenuBar] Placeholder image also failed to load:', placeholderImage);
     }
   };
 
