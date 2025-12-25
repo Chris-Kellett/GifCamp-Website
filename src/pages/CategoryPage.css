@@ -1,0 +1,21 @@
+.category-page {
+  width: 100%;
+  padding: 2rem;
+}
+
+.category-content h1 {
+  font-size: 2rem;
+  color: #2c3e50;
+  margin-bottom: 1.5rem;
+}
+
+.category-content p {
+  font-size: 1.1rem;
+  color: #555;
+  margin-bottom: 0.5rem;
+}
+
+.category-content strong {
+  color: #2c3e50;
+}
+

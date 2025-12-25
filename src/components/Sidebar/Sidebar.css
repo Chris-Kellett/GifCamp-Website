@@ -1,0 +1,134 @@
+.sidebar {
+  width: 250px;
+  background-color: #f8f9fa;
+  border-right: 1px solid #e0e0e0;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  min-height: calc(100vh - 200px); /* Adjust based on header/footer height */
+}
+
+.sidebar-header {
+  padding: 1rem;
+  border-bottom: 1px solid #e0e0e0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.sidebar-section {
+  flex: 1;
+  padding: 1rem;
+  overflow-y: auto;
+}
+
+.sidebar-section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.sidebar-section-title {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #666;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin: 0;
+}
+
+.sidebar-add-button {
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  font-weight: 300;
+  color: #666;
+  cursor: pointer;
+  padding: 0;
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 4px;
+  transition: all 0.2s ease;
+  line-height: 1;
+}
+
+.sidebar-add-button:hover {
+  background-color: #e0e0e0;
+  color: #2c3e50;
+}
+
+.sidebar-button {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  background-color: white;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 0.95rem;
+  font-weight: 500;
+  color: #2c3e50;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-align: left;
+}
+
+.sidebar-button:hover {
+  background-color: #f0f0f0;
+  border-color: #3498db;
+}
+
+.sidebar-button[data-selected="true"] {
+  background-color: #3498db;
+  color: white;
+  border-color: #3498db;
+}
+
+.sidebar-button[data-selected="true"]:hover {
+  background-color: #2980b9;
+}
+
+.sidebar-categories {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.sidebar-category-button {
+  /* Same as sidebar-button, no additional styles needed */
+  border-radius: 0;
+  border-top: none;
+}
+
+.sidebar-category-button:first-child {
+  border-top: 1px solid #ddd;
+  border-top-left-radius: 4px;
+  border-top-right-radius: 4px;
+}
+
+.sidebar-category-button:last-child {
+  border-bottom-left-radius: 4px;
+  border-bottom-right-radius: 4px;
+}
+
+.sidebar-category-button:not(:last-child) {
+  border-bottom: none;
+}
+
+.sidebar-loading,
+.sidebar-empty {
+  padding: 1rem;
+  text-align: center;
+  color: #999;
+  font-size: 0.9rem;
+  font-style: italic;
+}
+
+@media (max-width: 768px) {
+  .sidebar {
+    width: 200px;
+  }
+}
+

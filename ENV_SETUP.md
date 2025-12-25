@@ -41,6 +41,22 @@ The HTTP endpoint URL where user login data will be sent after successful OAuth 
 }
 ```
 
+### VITE_CATEGORIES_API_ENDPOINT
+The HTTP endpoint URL for creating a new category.
+
+**Format:** `http://your-api-server.com/category-add`
+
+**Operation:**
+- **POST** `/category-add` - Creates a new category (body: `{ userId: number, name: string }`)
+
+### VITE_CATEGORIES_ALL_API_ENDPOINT
+The HTTP endpoint URL for fetching all categories for a user.
+
+**Format:** `http://your-api-server.com/category-all`
+
+**Operation:**
+- **POST** `/category-all` - Fetches all categories for a user (body: `{ userId: number }`)
+
 ### VITE_ISDEV (Optional)
 Enable development logging. When set to `true`, detailed logs will be output to the terminal/console for all user actions, API calls, and application events.
 
@@ -57,6 +73,8 @@ Edit `.env.development` file in the root directory:
 ```
 VITE_GOOGLE_CLIENT_ID=your_google_client_id_here
 VITE_API_ENDPOINT=http://localhost:5255/login
+VITE_CATEGORIES_API_ENDPOINT=http://localhost:5255/category-add
+VITE_CATEGORIES_ALL_API_ENDPOINT=http://localhost:5255/category-all
 VITE_ISDEV=true
 ```
 
@@ -69,6 +87,8 @@ Edit `.env.production` file in the root directory:
 ```
 VITE_GOOGLE_CLIENT_ID=your_production_google_client_id_here
 VITE_API_ENDPOINT=https://your-production-api.com/login
+VITE_CATEGORIES_API_ENDPOINT=https://your-production-api.com/category-add
+VITE_CATEGORIES_ALL_API_ENDPOINT=https://your-production-api.com/category-all
 VITE_ISDEV=false
 ```
 

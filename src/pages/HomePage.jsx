@@ -1,12 +1,15 @@
-import { useEffect, useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import { logInfo, logAction } from '../utils/logger';
+import Sidebar from '../components/Sidebar/Sidebar';
+import CategoryPage from './CategoryPage';
+import WelcomePage from './WelcomePage';
 import './HomePage.css';
 
 const HomePage = () => {
   const { isAuthenticated, user } = useAuth();
-  const [imageError, setImageError] = useState(false);
-  const placeholderImage = '/assets/placeholder-avatar.png';
+  const [selectedCategoryId, setSelectedCategoryId] = useState(null);
+  const [selectedCategoryName, setSelectedCategoryName] = useState(null);
 
   useEffect(() => {
     logInfo('HomePage', 'Home page loaded', {
@@ -15,40 +18,39 @@ const HomePage = () => {
     });
   }, [isAuthenticated, user]);
 
-  // Reset image error when user changes
-  useEffect(() => {
-    setImageError(false);
-  }, [user?.picture]);
-
-  const getAvatarSrc = () => {
-    if (!user?.picture || imageError) {
-      return placeholderImage;
-    }
-    return user.picture;
+  const handleCategorySelect = (categoryId, categoryName) => {
+    logAction('HomePage', 'Category selected', { categoryId, categoryName });
+    setSelectedCategoryId(categoryId);
+    setSelectedCategoryName(categoryName || null);
   };
 
-  const handleImageError = () => {
-    setImageError(true);
-  };
+  // Show welcome page if not authenticated
+  if (!isAuthenticated) {
+    return <WelcomePage />;
+  }
 
+  // Show home page with sidebar if authenticated
   return (
     <div className="home-page">
-      <div className="home-content">
-        <h1>Welcome to GifCamp</h1>
-        {isAuthenticated && user ? (
-          <div className="user-info">
-            <p>Hello, <strong>{user.name}</strong>!</p>
-            <p>You are logged in via {user.method || 'OAuth'}.</p>
-            <img 
-              src={getAvatarSrc()} 
-              alt={user.name} 
-              className="user-avatar"
-              onError={handleImageError}
+      <div className="home-page-container">
+        <Sidebar
+          onCategorySelect={handleCategorySelect}
+          selectedCategoryId={selectedCategoryId}
+          selectedCategoryName={selectedCategoryName}
+        />
+        <div className="home-page-main">
+          {selectedCategoryId ? (
+            <CategoryPage
+              categoryId={selectedCategoryId}
+              categoryName={selectedCategoryName}
             />
-          </div>
-        ) : (
-          <p>Please log in to continue.</p>
-        )}
+          ) : (
+            <div className="home-page-content">
+              <h1>Welcome to GifCamp</h1>
+              <p>Select a category from the sidebar to get started.</p>
+            </div>
+          )}
+        </div>
       </div>
     </div>
   );

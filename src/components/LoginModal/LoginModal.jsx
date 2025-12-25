@@ -77,9 +77,12 @@ const LoginContent = ({ onClose }) => {
         onClose();
       } catch (error) {
         logError('LoginModal', 'Google login error', error);
-        // Provide more detailed error message
+        // Only show alert if AuthContext hasn't already shown one
+        // AuthContext shows "There was an Error logging you in." format
         const errorMessage = error.message || 'Unknown error occurred';
-        alert(`Failed to login: ${errorMessage}. Please check the console for more details.`);
+        if (!errorMessage.includes('There was an Error logging you in')) {
+          alert(`Failed to login: ${errorMessage}.`);
+        }
       }
     },
     onError: (error) => {

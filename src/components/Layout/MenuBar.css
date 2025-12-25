@@ -26,6 +26,28 @@
 .menu-bar-actions {
   display: flex;
   gap: 1rem;
+  align-items: center;
+}
+
+.menu-bar-user-info {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.menu-bar-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  object-fit: cover;
+}
+
+.menu-bar-user-name {
+  color: white;
+  font-size: 1rem;
+  font-weight: 500;
+  margin-right: 0.5rem;
 }
 
 .menu-bar-button {
@@ -70,6 +92,26 @@
   .menu-bar-button {
     padding: 0.4rem 1rem;
     font-size: 0.9rem;
+  }
+
+  .menu-bar-user-info {
+    gap: 0.5rem;
+  }
+
+  .menu-bar-avatar {
+    width: 32px;
+    height: 32px;
+  }
+
+  .menu-bar-user-name {
+    font-size: 0.9rem;
+  }
+}
+
+/* Hide user name on very small screens */
+@media (max-width: 480px) {
+  .menu-bar-user-name {
+    display: none;
   }
 }
 

@@ -49,19 +49,7 @@ export const AuthProvider = ({ children }) => {
     });
     
     try {
-      // Store user data and token first (non-blocking)
-      localStorage.setItem('user', JSON.stringify(userData));
-      localStorage.setItem('authToken', authToken);
-      
-      setUser(userData);
-      setIsAuthenticated(true);
-      
-      logInfo('AuthContext', 'User session stored in localStorage', {
-        email: userData.email,
-        name: userData.name
-      });
-
-      // Call the HTTP endpoint to record user details (non-blocking, fire and forget)
+      // Call the HTTP endpoint to record user details and check for errors
       let apiEndpoint = import.meta.env.VITE_API_ENDPOINT;
       
       // In development mode, use the Vite proxy to avoid CORS issues
@@ -89,48 +77,122 @@ export const AuthProvider = ({ children }) => {
         console.log('[AuthContext] Sending POST request to:', apiEndpoint);
         console.log('[AuthContext] Request data:', requestData);
         
-        // Don't await - let it run in the background
-        fetch(apiEndpoint, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify(requestData),
-        })
-          .then(async (response) => {
-            console.log('[AuthContext] Response received:', response.status, response.statusText);
-            if (!response.ok) {
-              const errorText = await response.text();
-              logWarn('AuthContext', `API endpoint returned non-OK status: ${response.status}`, {
-                status: response.status,
-                statusText: response.statusText,
-                error: errorText
-              });
-              console.error('[AuthContext] API error:', response.status, errorText);
-            } else {
-              const responseData = await response.json().catch(() => ({}));
-              logApi('AuthContext', 'POST', apiEndpoint, null, responseData);
-              logInfo('AuthContext', 'User login successfully recorded in database');
-              console.log('[AuthContext] API success:', responseData);
-            }
-          })
-          .catch((error) => {
-            // Log but don't throw - login should still succeed
-            logWarn('AuthContext', 'Failed to record user login to API endpoint', {
-              error: error.message,
-              note: 'This is expected if the API service is not yet running.'
-            });
-            console.error('[AuthContext] Fetch error:', error);
-            console.error('[AuthContext] Error details:', {
-              message: error.message,
-              stack: error.stack,
-              name: error.name
-            });
+        try {
+          const response = await fetch(apiEndpoint, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(requestData),
           });
+
+          console.log('[AuthContext] Response received:', response.status, response.statusText);
+          
+          // Read response body once - can only be consumed once
+          let responseData = {};
+          let hasError = false;
+          let errorDescription = null;
+
+          try {
+            // Try to parse as JSON first (works for both success and error responses)
+            const responseText = await response.text();
+            if (responseText) {
+              try {
+                responseData = JSON.parse(responseText);
+              } catch {
+                // If not JSON, treat responseText as plain text
+                responseData = { error: !response.ok, description: responseText };
+              }
+            }
+          } catch (readError) {
+            // If we can't read the response at all, treat as error
+            logWarn('AuthContext', 'Failed to read response body', readError);
+            responseData = { error: true, description: null };
+          }
+
+          // Check for errors: HTTP error status OR error field in response
+          if (!response.ok || responseData.error === true) {
+            hasError = true;
+            errorDescription = responseData.description || null;
+            
+            // If no description and it's an HTTP error, use status text
+            if (!errorDescription && !response.ok) {
+              errorDescription = `HTTP ${response.status}: ${response.statusText}`;
+            }
+
+            logWarn('AuthContext', `API endpoint returned error`, {
+              status: response.status,
+              statusText: response.statusText,
+              error: true,
+              description: errorDescription
+            });
+            console.error('[AuthContext] API error:', response.status, errorDescription);
+          } else {
+            logApi('AuthContext', 'POST', apiEndpoint, null, responseData);
+            logInfo('AuthContext', 'User login successfully recorded in database');
+            console.log('[AuthContext] API success:', responseData);
+            
+            // Merge user data from API response if available (includes userId from backend)
+            // Preserve OAuth fields (like picture) that come from Google
+            if (responseData.user && typeof responseData.user === 'object') {
+              const picture = userData.picture; // Preserve OAuth picture
+              userData = { ...userData, ...responseData.user };
+              // Ensure picture is preserved if API didn't provide it
+              if (!responseData.user.picture && picture) {
+                userData.picture = picture;
+              }
+            }
+          }
+
+          // If there was an error, show message to user
+          if (hasError) {
+            let errorMessage = 'There was an Error logging you in.';
+            if (errorDescription) {
+              errorMessage += `\n\n${errorDescription}`;
+            }
+            alert(errorMessage);
+            throw new Error(errorMessage);
+          }
+        } catch (fetchError) {
+          // Network error or other fetch failure
+          const errorMessage = 'There was an Error logging you in.';
+          if (fetchError.message && !fetchError.message.includes('There was an Error')) {
+            // Only add description if it's not already our formatted message
+            const description = fetchError.message;
+            alert(`${errorMessage}\n\n${description}`);
+          } else {
+            alert(errorMessage);
+          }
+          
+          logWarn('AuthContext', 'Failed to record user login to API endpoint', {
+            error: fetchError.message,
+          });
+          console.error('[AuthContext] Fetch error:', fetchError);
+          console.error('[AuthContext] Error details:', {
+            message: fetchError.message,
+            stack: fetchError.stack,
+            name: fetchError.name
+          });
+          
+          throw fetchError;
+        }
       } else {
         logWarn('AuthContext', 'VITE_API_ENDPOINT not configured. User login not recorded to database.');
         console.warn('[AuthContext] VITE_API_ENDPOINT is undefined or empty');
+        // If no endpoint is configured, we'll still allow login but warn
       }
+
+      // Only store user data and authenticate if API call succeeded (or no endpoint configured)
+      localStorage.setItem('user', JSON.stringify(userData));
+      localStorage.setItem('authToken', authToken);
+      
+      setUser(userData);
+      setIsAuthenticated(true);
+      
+      logInfo('AuthContext', 'User session stored in localStorage', {
+        email: userData.email,
+        name: userData.name
+      });
       
       logInfo('AuthContext', 'Login completed successfully', {
         email: userData.email
