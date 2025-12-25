@@ -1,0 +1,176 @@
+.images-page {
+  width: 100%;
+  height: 100%;
+  overflow-y: auto;
+}
+
+.images-page-container {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+/* Top section: Add images */
+.images-add-section {
+  width: 100%;
+  padding: 1.5rem;
+  display: flex;
+  gap: 1rem;
+  align-items: stretch;
+  flex-wrap: wrap;
+}
+
+.images-add-controls {
+  display: flex;
+  gap: 0.75rem;
+  flex: 1;
+  min-width: 300px;
+}
+
+.images-url-input {
+  flex: 1;
+  padding: 0.75rem 1rem;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 1rem;
+  min-width: 200px;
+}
+
+.images-url-input:focus {
+  outline: none;
+  border-color: #3498db;
+}
+
+.images-url-input:disabled {
+  background-color: #f5f5f5;
+  cursor: not-allowed;
+}
+
+.images-add-button {
+  padding: 0.75rem 1.5rem;
+  background-color: #3498db;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  font-size: 1rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.images-add-button:hover:not(:disabled) {
+  background-color: #2980b9;
+}
+
+.images-add-button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+
+.images-drop-zone {
+  padding: 0.75rem 1rem;
+  border: 2px dashed #ddd;
+  border-radius: 4px;
+  text-align: center;
+  color: #666;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  min-width: 200px;
+  flex: 0 0 auto;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+}
+
+.images-drop-zone:hover {
+  border-color: #3498db;
+  background-color: #f8f9fa;
+}
+
+.images-drop-zone.dragging {
+  border-color: #3498db;
+  background-color: #e8f4f8;
+  border-style: solid;
+}
+
+.images-error {
+  padding: 0.75rem 1.5rem;
+  margin: 0 1.5rem;
+  background-color: #fee;
+  color: #c33;
+  border-radius: 4px;
+  font-size: 0.9rem;
+}
+
+/* Main section: Image grid */
+.images-grid-section {
+  flex: 1;
+  overflow-y: auto;
+  padding: 1.5rem;
+  padding-top: 0;
+}
+
+.images-loading,
+.images-empty {
+  text-align: center;
+  padding: 3rem;
+  color: #999;
+  font-size: 1.1rem;
+}
+
+.images-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 1rem;
+}
+
+.images-grid-item {
+  position: relative;
+  width: 100%;
+  padding-top: 100%; /* 1:1 aspect ratio */
+  background-color: #f8f9fa;
+  border-radius: 4px;
+  overflow: hidden;
+  cursor: pointer;
+  transition: transform 0.2s ease;
+}
+
+.images-grid-item:hover {
+  transform: scale(1.02);
+}
+
+.images-grid-image {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+@media (max-width: 768px) {
+  .images-add-section {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .images-add-controls {
+    min-width: 100%;
+  }
+
+  .images-drop-zone {
+    min-width: 100%;
+  }
+
+  .images-grid {
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    gap: 0.75rem;
+  }
+}
+

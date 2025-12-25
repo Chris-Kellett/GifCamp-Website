@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import { logInfo, logAction } from '../utils/logger';
 import Sidebar from '../components/Sidebar/Sidebar';
-import CategoryPage from './CategoryPage';
+import ImagesPage from './ImagesPage';
 import WelcomePage from './WelcomePage';
 import './HomePage.css';
 
@@ -39,17 +39,7 @@ const HomePage = () => {
           selectedCategoryName={selectedCategoryName}
         />
         <div className="home-page-main">
-          {selectedCategoryId ? (
-            <CategoryPage
-              categoryId={selectedCategoryId}
-              categoryName={selectedCategoryName}
-            />
-          ) : (
-            <div className="home-page-content">
-              <h1>Welcome to GifCamp</h1>
-              <p>Select a category from the sidebar to get started.</p>
-            </div>
-          )}
+          <ImagesPage categoryId={selectedCategoryId} />
         </div>
       </div>
     </div>

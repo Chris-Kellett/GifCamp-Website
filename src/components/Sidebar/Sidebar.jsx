@@ -126,6 +126,13 @@ const Sidebar = ({ onCategorySelect, selectedCategoryId, selectedCategoryName })
     }
   };
 
+  const handleUncategorisedClick = () => {
+    logAction('Sidebar', 'Uncategorised button clicked');
+    if (onCategorySelect) {
+      onCategorySelect('uncategorised', 'Uncategorised');
+    }
+  };
+
   const handleCategoryClick = (category, e) => {
     // Don't trigger category selection if clicking the trash icon
     if (e && e.target.closest('.category-delete-button')) {
@@ -159,6 +166,13 @@ const Sidebar = ({ onCategorySelect, selectedCategoryId, selectedCategoryName })
             data-selected={selectedCategoryId === null}
           >
             All
+          </button>
+          <button
+            className="sidebar-button"
+            onClick={handleUncategorisedClick}
+            data-selected={selectedCategoryId === 'uncategorised'}
+          >
+            Uncategorised
           </button>
         </div>
 

@@ -65,6 +65,30 @@ The HTTP endpoint URL for deleting a category.
 **Operation:**
 - **POST** `/category-delete` - Deletes a category (body: `{ userId: number, categoryId: number }`)
 
+### VITE_IMAGES_GET_API_ENDPOINT
+The HTTP endpoint URL for fetching images.
+
+**Format:** `http://your-api-server.com/images-get`
+
+**Operation:**
+- **POST** `/images-get` - Fetches images for a user/category (body: `{ userId: number, categoryId: number | null }`)
+
+### VITE_IMAGES_ADD_LINK_API_ENDPOINT
+The HTTP endpoint URL for adding an image from a URL.
+
+**Format:** `http://your-api-server.com/images-add-link`
+
+**Operation:**
+- **POST** `/images-add-link` - Adds an image from URL (body: `{ userId: number, categoryId: number | null, imageUrl: string }`)
+
+### VITE_IMAGES_ADD_BLOB_API_ENDPOINT
+The HTTP endpoint URL for adding an image from a file/blob.
+
+**Format:** `http://your-api-server.com/images-add-blob`
+
+**Operation:**
+- **POST** `/images-add-blob` - Adds an image from file upload (FormData with `userId`, `categoryId`, and `image` file)
+
 ### VITE_ISDEV (Optional)
 Enable development logging. When set to `true`, detailed logs will be output to the terminal/console for all user actions, API calls, and application events.
 
@@ -84,6 +108,9 @@ VITE_API_ENDPOINT=http://localhost:5255/login
 VITE_CATEGORIES_API_ENDPOINT=http://localhost:5255/category-add
 VITE_CATEGORIES_ALL_API_ENDPOINT=http://localhost:5255/category-all
 VITE_CATEGORIES_DELETE_API_ENDPOINT=http://localhost:5255/category-delete
+VITE_IMAGES_GET_API_ENDPOINT=http://localhost:5255/images-get
+VITE_IMAGES_ADD_LINK_API_ENDPOINT=http://localhost:5255/images-add-link
+VITE_IMAGES_ADD_BLOB_API_ENDPOINT=http://localhost:5255/images-add-blob
 VITE_ISDEV=true
 ```
 
@@ -99,6 +126,9 @@ VITE_API_ENDPOINT=https://your-production-api.com/login
 VITE_CATEGORIES_API_ENDPOINT=https://your-production-api.com/category-add
 VITE_CATEGORIES_ALL_API_ENDPOINT=https://your-production-api.com/category-all
 VITE_CATEGORIES_DELETE_API_ENDPOINT=https://your-production-api.com/category-delete
+VITE_IMAGES_GET_API_ENDPOINT=https://your-production-api.com/images-get
+VITE_IMAGES_ADD_LINK_API_ENDPOINT=https://your-production-api.com/images-add-link
+VITE_IMAGES_ADD_BLOB_API_ENDPOINT=https://your-production-api.com/images-add-blob
 VITE_ISDEV=false
 ```
 
