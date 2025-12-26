@@ -1,0 +1,188 @@
+.image-lightbox-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.9);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2000;
+  padding: 2rem;
+  box-sizing: border-box;
+}
+
+.image-lightbox-content {
+  background: white;
+  border-radius: 8px;
+  max-width: 90vw;
+  max-height: 90vh;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  overflow: hidden;
+}
+
+.image-lightbox-close {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  background: rgba(0, 0, 0, 0.6);
+  color: white;
+  border: none;
+  font-size: 2rem;
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: 50%;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10;
+  transition: background-color 0.2s ease;
+  line-height: 1;
+  padding: 0;
+}
+
+.image-lightbox-close:hover {
+  background: rgba(0, 0, 0, 0.8);
+}
+
+.image-lightbox-image-container {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+  max-height: 60vh;
+  overflow: auto;
+  background-color: #f8f9fa;
+}
+
+.image-lightbox-image {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+  border-radius: 4px;
+}
+
+.image-lightbox-details {
+  padding: 1.5rem;
+  border-top: 1px solid #e0e0e0;
+  background-color: white;
+}
+
+.image-lightbox-detail-row {
+  display: flex;
+  align-items: center;
+  margin-bottom: 1rem;
+  gap: 1rem;
+}
+
+.image-lightbox-detail-row:last-of-type {
+  margin-bottom: 1.5rem;
+}
+
+.image-lightbox-detail-label {
+  font-weight: 500;
+  color: #2c3e50;
+  min-width: 100px;
+}
+
+.image-lightbox-detail-value {
+  color: #555;
+  flex: 1;
+}
+
+.image-lightbox-url-input {
+  flex: 1;
+  padding: 0.5rem;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 0.9rem;
+  font-family: monospace;
+  background-color: #f8f9fa;
+  cursor: text;
+}
+
+.image-lightbox-url-input:focus {
+  outline: none;
+  border-color: #3498db;
+  background-color: white;
+}
+
+.image-lightbox-actions {
+  display: flex;
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+.image-lightbox-copy-button,
+.image-lightbox-delete-button {
+  flex: 1;
+  padding: 0.75rem 1.5rem;
+  border: none;
+  border-radius: 6px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.image-lightbox-copy-button {
+  background-color: #3498db;
+  color: white;
+}
+
+.image-lightbox-copy-button:hover {
+  background-color: #2980b9;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(52, 152, 219, 0.3);
+}
+
+.image-lightbox-delete-button {
+  background-color: #e74c3c;
+  color: white;
+}
+
+.image-lightbox-delete-button:hover {
+  background-color: #c0392b;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(231, 76, 60, 0.3);
+}
+
+@media (max-width: 768px) {
+  .image-lightbox-overlay {
+    padding: 1rem;
+  }
+
+  .image-lightbox-content {
+    max-width: 100%;
+    max-height: 100%;
+  }
+
+  .image-lightbox-image-container {
+    padding: 1rem;
+    max-height: 50vh;
+  }
+
+  .image-lightbox-details {
+    padding: 1rem;
+  }
+
+  .image-lightbox-detail-row {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
+  }
+
+  .image-lightbox-detail-label {
+    min-width: auto;
+  }
+
+  .image-lightbox-url-input {
+    width: 100%;
+  }
+}
+

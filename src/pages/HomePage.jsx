@@ -39,7 +39,7 @@ const HomePage = () => {
           selectedCategoryName={selectedCategoryName}
         />
         <div className="home-page-main">
-          <ImagesPage categoryId={selectedCategoryId} />
+          <ImagesPage categoryId={selectedCategoryId} categoryName={selectedCategoryName} />
         </div>
       </div>
     </div>

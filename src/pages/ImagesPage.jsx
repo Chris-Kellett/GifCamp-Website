@@ -1,9 +1,10 @@
 import { useState, useEffect, useRef } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import { logInfo, logError, logAction } from '../utils/logger';
+import ImageLightbox from '../components/ImageLightbox/ImageLightbox';
 import './ImagesPage.css';
 
-const ImagesPage = ({ categoryId }) => {
+const ImagesPage = ({ categoryId, categoryName }) => {
   const { user } = useAuth();
   const [imageUrl, setImageUrl] = useState('');
   const [images, setImages] = useState([]);
@@ -11,6 +12,10 @@ const ImagesPage = ({ categoryId }) => {
   const [isAdding, setIsAdding] = useState(false);
   const [error, setError] = useState(null);
   const [isDragging, setIsDragging] = useState(false);
+  const [copiedImageId, setCopiedImageId] = useState(null);
+  const [deleteConfirmImageId, setDeleteConfirmImageId] = useState(null);
+  const [selectedImage, setSelectedImage] = useState(null);
+  const deleteConfirmTimeoutRef = useRef(null);
   const fileInputRef = useRef(null);
   const dropZoneRef = useRef(null);
 
@@ -318,6 +323,131 @@ const ImagesPage = ({ categoryId }) => {
     }
   };
 
+  const handleCopyLink = async (image) => {
+    const imageUrlToCopy = image.url || image;
+    
+    try {
+      await navigator.clipboard.writeText(imageUrlToCopy);
+      setCopiedImageId(image.id);
+      
+      // Reset after 3 seconds
+      setTimeout(() => {
+        setCopiedImageId(null);
+      }, 3000);
+      
+      logAction('ImagesPage', 'Image URL copied to clipboard', { imageId: image.id });
+    } catch (error) {
+      logError('ImagesPage', 'Failed to copy image URL', error);
+      setError('Failed to copy URL to clipboard');
+    }
+  };
+
+  const handleDeleteClick = (image) => {
+    if (deleteConfirmImageId === image.id) {
+      // Second click - confirm delete
+      handleDeleteImage(image);
+    } else {
+      // First click - show confirm
+      setDeleteConfirmImageId(image.id);
+      
+      // Clear any existing timeout
+      if (deleteConfirmTimeoutRef.current) {
+        clearTimeout(deleteConfirmTimeoutRef.current);
+      }
+      
+      // Revert after 3 seconds
+      deleteConfirmTimeoutRef.current = setTimeout(() => {
+        setDeleteConfirmImageId(null);
+      }, 3000);
+      
+      logAction('ImagesPage', 'Delete confirmation shown', { imageId: image.id });
+    }
+  };
+
+  const handleDeleteImage = async (image) => {
+    if (!user) return;
+
+    // Clear the confirm state
+    setDeleteConfirmImageId(null);
+    if (deleteConfirmTimeoutRef.current) {
+      clearTimeout(deleteConfirmTimeoutRef.current);
+    }
+
+    try {
+      logAction('ImagesPage', 'Deleting image', { imageId: image.id, categoryId });
+
+      // Get userId as a number
+      const userId = user.id;
+      if (!userId) {
+        throw new Error('User ID not found. Please log in again.');
+      }
+
+      // Get the API endpoint from environment variable
+      let apiEndpoint = import.meta.env.VITE_IMAGES_DELETE_API_ENDPOINT;
+      
+      if (!apiEndpoint) {
+        throw new Error('Images delete API endpoint not configured');
+      }
+      
+      // In development mode, use the Vite proxy
+      if (import.meta.env.DEV && apiEndpoint && apiEndpoint.includes('localhost:5255')) {
+        const url = new URL(apiEndpoint);
+        apiEndpoint = `/api${url.pathname}${url.search}`;
+      }
+
+      const requestData = {
+        userId: typeof userId === 'string' ? parseInt(userId, 10) : userId,
+        imageId: typeof image.id === 'string' ? parseInt(image.id, 10) : image.id,
+      };
+
+      const response = await fetch(apiEndpoint, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(requestData),
+      });
+
+      // Read response once
+      const responseText = await response.text();
+      let responseData = {};
+      
+      if (responseText) {
+        try {
+          responseData = JSON.parse(responseText);
+        } catch {
+          responseData = { error: !response.ok, description: responseText };
+        }
+      }
+
+      // Check for errors
+      if (!response.ok || responseData.error === true) {
+        const errorDescription = responseData.description || `HTTP ${response.status}: ${response.statusText}`;
+        setError(errorDescription);
+        logError('ImagesPage', 'Failed to delete image', { error: errorDescription });
+        return;
+      }
+
+      logInfo('ImagesPage', 'Image deleted successfully', responseData);
+      
+      // Refresh images
+      fetchImages();
+    } catch (error) {
+      const errorMessage = error.message || 'Failed to delete image';
+      setError(errorMessage);
+      logError('ImagesPage', 'Error deleting image', error);
+    }
+  };
+
+  // Cleanup timeout on unmount
+  useEffect(() => {
+    return () => {
+      if (deleteConfirmTimeoutRef.current) {
+        clearTimeout(deleteConfirmTimeoutRef.current);
+      }
+    };
+  }, []);
+
   return (
     <div className="images-page">
       <div className="images-page-container">
@@ -382,7 +512,16 @@ const ImagesPage = ({ categoryId }) => {
           ) : (
             <div className="images-grid">
               {images.map((image, index) => (
-                <div key={index} className="images-grid-item">
+                <div 
+                  key={image.id || index} 
+                  className="images-grid-item"
+                  onClick={(e) => {
+                    // Only open lightbox if clicking outside the overlay bar
+                    if (!e.target.closest('.images-grid-overlay')) {
+                      setSelectedImage(image);
+                    }
+                  }}
+                >
                   <img 
                     src={image.url || image} 
                     alt={`Image ${index + 1}`}
@@ -392,12 +531,42 @@ const ImagesPage = ({ categoryId }) => {
                       e.target.style.display = 'none';
                     }}
                   />
+                  <div className="images-grid-overlay">
+                    <div className="images-grid-overlay-bar">
+                      <button
+                        className="images-copy-button"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleCopyLink(image);
+                        }}
+                      >
+                        {copiedImageId === image.id ? 'Copied ✓' : 'Copy Link'}
+                      </button>
+                      <button
+                        className="images-delete-button"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleDeleteClick(image);
+                        }}
+                      >
+                        {deleteConfirmImageId === image.id ? 'Confirm?' : 'Delete'}
+                      </button>
+                    </div>
+                  </div>
                 </div>
               ))}
             </div>
           )}
         </div>
       </div>
+
+      {selectedImage && (
+        <ImageLightbox
+          image={selectedImage}
+          onClose={() => setSelectedImage(null)}
+          onDelete={handleDeleteImage}
+        />
+      )}
     </div>
   );
 };
