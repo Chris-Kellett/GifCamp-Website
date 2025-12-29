@@ -95,7 +95,32 @@ The HTTP endpoint URL for deleting an image.
 **Format:** `http://your-api-server.com/images-delete`
 
 **Operation:**
-- **POST** `/images-delete` - Deletes an image (body: `{ userId: number, categoryId: number, imageId: number }`)
+- **POST** `/images-delete` - Deletes an image (body: `{ userId: number, imageId: number }`)
+
+### VITE_IMAGES_GET_IMAGE_TAGS_API_ENDPOINT
+The HTTP endpoint URL for fetching tags associated with an image.
+
+**Format:** `http://your-api-server.com/images-get-image-tags`
+
+**Operation:**
+- **POST** `/images-get-image-tags` - Fetches tags for an image (body: `{ userId: number, imageId: number }`)
+- Returns: `{ error: boolean, description: string, tags: [{ id: number, tag: string }] }`
+
+### VITE_IMAGES_ADD_IMAGE_TAG_API_ENDPOINT
+The HTTP endpoint URL for adding a tag to an image.
+
+**Format:** `http://your-api-server.com/images-add-image-tag`
+
+**Operation:**
+- **POST** `/images-add-image-tag` - Adds a tag to an image (body: `{ userId: number, imageId: number, tag: string }`)
+
+### VITE_IMAGES_DELETE_IMAGE_TAG_API_ENDPOINT
+The HTTP endpoint URL for deleting a tag from an image.
+
+**Format:** `http://your-api-server.com/images-delete-image-tag`
+
+**Operation:**
+- **POST** `/images-delete-image-tag` - Deletes a tag from an image (body: `{ userId: number, imageId: number, tagId: number }`)
 
 ### VITE_ISDEV (Optional)
 Enable development logging. When set to `true`, detailed logs will be output to the terminal/console for all user actions, API calls, and application events.
@@ -120,6 +145,9 @@ VITE_IMAGES_GET_API_ENDPOINT=http://localhost:5255/images-get
 VITE_IMAGES_ADD_LINK_API_ENDPOINT=http://localhost:5255/images-add-link
 VITE_IMAGES_ADD_BLOB_API_ENDPOINT=http://localhost:5255/images-add-blob
 VITE_IMAGES_DELETE_API_ENDPOINT=http://localhost:5255/images-delete
+VITE_IMAGES_GET_IMAGE_TAGS_API_ENDPOINT=http://localhost:5255/images-get-image-tags
+VITE_IMAGES_ADD_IMAGE_TAG_API_ENDPOINT=http://localhost:5255/images-add-image-tag
+VITE_IMAGES_DELETE_IMAGE_TAG_API_ENDPOINT=http://localhost:5255/images-delete-image-tag
 VITE_ISDEV=true
 ```
 
@@ -139,6 +167,9 @@ VITE_IMAGES_GET_API_ENDPOINT=https://your-production-api.com/images-get
 VITE_IMAGES_ADD_LINK_API_ENDPOINT=https://your-production-api.com/images-add-link
 VITE_IMAGES_ADD_BLOB_API_ENDPOINT=https://your-production-api.com/images-add-blob
 VITE_IMAGES_DELETE_API_ENDPOINT=https://your-production-api.com/images-delete
+VITE_IMAGES_GET_IMAGE_TAGS_API_ENDPOINT=https://your-production-api.com/images-get-image-tags
+VITE_IMAGES_ADD_IMAGE_TAG_API_ENDPOINT=https://your-production-api.com/images-add-image-tag
+VITE_IMAGES_DELETE_IMAGE_TAG_API_ENDPOINT=https://your-production-api.com/images-delete-image-tag
 VITE_ISDEV=false
 ```
 
